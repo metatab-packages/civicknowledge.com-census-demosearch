@@ -14,26 +14,26 @@ Version.Major,1
 Version.Minor,1
 Version.Patch,1
 Created,2021-01-27T21:18:36
-Modified,2021-01-28T17:39:06
-Giturl,https://github.com/CivicKnowledge/radius-search.git
-
+Modified,2021-01-28T19:11:18
+Giturl,https://github.com/metatab-packages/civicknowledge.com-census-demosearch.git
+""
 Section,Contacts,Email,Organization,Url
 Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowledge.com
-
+""
 Section,Documentation,Title,Description,
 Documentation,file:README.md,README,,
-
+""
 Section,References,Name,Description,
 Reference,census://2019/5/US/tract/B01001,B01001,Sex by age,
 Reference,census://2019/5/US/tract/B01002,B01002,Median Age by Sex,
 Reference,census://2018/5/US/tract/B11009,B11009,Coupled Households by Type,
 Reference,census://2018/5/US/tract/B26105,B26105,Group Quarters Type (3 Types) by School Enrollment,
 Reference,census://2019/5/US/tract/B15001,B15001,Sex by Age by Educational Attainment,
-
+""
 Section,Resources,Name,Description,
 Datafile,notebooks/Combine.ipynb#df,combined,Tract datasets combined into a single frame,
 Datafile,notebooks/Combine.ipynb#agg_map,agg_map,Description of which columns were aggregated together,
-
+""
 Section,Schema,DataType,Description,
 Table,combined,,,
 Table.Column,geoid,string,Tract geoid,

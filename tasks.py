@@ -1,10 +1,21 @@
 # Task definitions for invoke
 # You must first install invoke, https://www.pyinvoke.org/
 
+from pathlib import Path
+import sys
+import metapack as mp
 # You can also create you own tasks
 from invoke import task
-
+from metapack.appurl import SearchUrl
 from metapack_build.tasks.package import ns
+from metapack_build.tasks.package import build as mp_build
+
+SearchUrl.initialize()  # This makes the 'index:" urls work
+
+sys.path.append(str(Path(__file__).parent.resolve()))
+
+import pylib
+
 
 # To configure options for invoke functions you can:
 # - Set values in the 'invoke' section of `~/.metapack.yaml
@@ -28,10 +39,23 @@ from metapack_build.tasks.package import ns
 # file, and `s3_bucket` and `wp_site` should be set at the collection or global level
 
 
-@task
-def example_task(c):
-    """An exmaple Invoke task"""
-    c.run("echo 'this is an example task' ")
+@task(optional=['force'])
+def build(c, force=None):
+    """Build a filesystem package."""
 
+    import logging
+    from pylib import logger
+    logging.basicConfig()
+    logger.setLevel(logging.INFO)
 
-ns.add_task(example_task)
+    pkg_dir = str(Path(__file__).parent.resolve())
+    print(f"Pkg dir: {pkg_dir}")
+
+    pkg = mp.open_package(pkg_dir)
+
+    ex = pylib.ExtractManager(pkg)
+    ex.build(force)
+
+    mp_build(c, force)
+
+ns.add_task(build)

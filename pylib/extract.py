@@ -2,6 +2,7 @@
 
 """
 
+import logging
 from functools import reduce
 from itertools import chain
 from pathlib import Path
@@ -9,12 +10,9 @@ from pathlib import Path
 import metapack as mp
 import pandas as pd
 from demosearch import FileCache
-from tqdm.notebook import tqdm
-
-
-import logging
 
 logger = logging.getLogger(__name__)
+
 
 class LPError(Exception):
     pass
@@ -34,7 +32,7 @@ aggregates = {
 
 
 def get_columns(pkg):
-    """Get the colums from the existing schema"""
+    """Get the columns from the existing schema"""
     pkg = mp.open_package(pkg.ref)  # Re-open in case it has changed since loaded in this notebook
     return [e['name'] for e in pkg.resource('census_set').columns()]
 
@@ -96,9 +94,9 @@ class ExtractManager(object):
             self._agg_map = pd.DataFrame(rows, columns=['agg_column', 'source_col', 'description'])
 
             cols = get_columns(self.pkg)
-            cols.remove('geoid') # geoid is in the index, not the columns
+            cols.remove('geoid')  # geoid is in the index, not the columns
 
-            self._df = df[cols]
+            self._df = df.rename(columns=self.table_code_map)[cols].reset_index()
 
         return self._df
 
@@ -110,12 +108,21 @@ class ExtractManager(object):
         return {k: munge(v) for k, v in kv}
 
     @property
+    def table_code_map(self):
+        "Map from census table codes to friendlier names"
+        return {c.props.get('tablecode'): c.name for c in
+                self.pkg.resource('census_set').schema_term.find('Table.Column')
+                if c.props.get('tablecode')}
+
+    @property
     def agg_map(self):
 
         if self._agg_map is None:
-            _ = self.census_set # Also creates the agg_map
+            _ = self.census_set  # Also creates the agg_map
 
         return self._agg_map
+
+
 
     def update_schema(self):
         pkg = mp.open_package(self.pkg.ref)  # Re-open in case it has changed since loaded in this notebook
@@ -139,12 +146,10 @@ class ExtractManager(object):
             p = dd.joinpath(o).with_suffix('.csv')
             if not p.exists() or force:
                 logger.info(f"Creating {o}{' (forcing)' if force else ''}")
-                d = getattr(self,o)
+                d = getattr(self, o)
                 logger.info(f"Write {o}")
-                d.to_csv(p)
+                d.to_csv(p, index=False)
             else:
                 logger.info(f"{o} already exists")
-
-
 
 # update_schema(pkg)

@@ -8,3 +8,7 @@ metadata.txt
 _packages
 *.pyc
 .DS_Store
+
+.idea
+data/agg_map.csv
+data/census_set.csv

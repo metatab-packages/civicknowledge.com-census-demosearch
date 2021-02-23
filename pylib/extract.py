@@ -6,6 +6,7 @@ import logging
 from functools import reduce
 from itertools import chain
 from pathlib import Path
+from auto_tqdm import tqdm
 
 import metapack as mp
 import pandas as pd
@@ -28,6 +29,7 @@ aggregates = {
 
     'male_18_44_college': ['b15001_009', 'b15001_010', 'b15001_017', 'b15001_018', 'b15001_025', 'b15001_026'],
     'female_18_44_college': ['b15001_050', 'b15001_051', 'b15001_058', 'b15001_059', 'b15001_066', 'b15001_067']
+    
 }
 
 
@@ -66,39 +68,10 @@ class ExtractManager(object):
     def frames(self):
         if self._frames is None:
             logger.info('Collect frames')
-            self._frames = [r.dataframe().drop(columns=['stusab', 'county', 'name']) for r in self.pkg.references()]
+            self._frames = [r.dataframe().drop(columns=['stusab', 'county', 'name']) 
+                            for r in tqdm(self.pkg.references())  if r.name.startswith('B')]
 
         return self._frames
-
-    @property
-    def census_set(self):
-
-        if self._df is None or True:
-
-            frames = self.frames
-
-            logger.info('Assemble frames in to dataset')
-            df = reduce(lambda left, right: left.join(right), frames[1:], frames[0])
-
-            m90_col = [c for c in df.columns if c.endswith('m90')]
-            df = df.drop(columns=m90_col)
-
-            logger.info('Make aggregate map')
-            rows = []
-            for acol, scols in aggregates.items():
-                df[acol] = df.loc[:, scols].sum(axis=1)
-
-                for c in scols:
-                    rows.append((acol, c, self.column_map[c.upper()]))
-
-            self._agg_map = pd.DataFrame(rows, columns=['agg_column', 'source_col', 'description'])
-
-            cols = get_columns(self.pkg)
-            cols.remove('geoid')  # geoid is in the index, not the columns
-
-            self._df = df.rename(columns=self.table_code_map)[cols].reset_index()
-
-        return self._df
 
     @property
     def column_map(self):
@@ -132,6 +105,45 @@ class ExtractManager(object):
                 c.description = self.column_map.get(c.name.upper())
 
         pkg.write()
+
+    @property
+    def census_set(self):
+
+        if self._df is None or True:
+
+            frames = self.frames
+
+            logger.info('Assemble frames in to dataset')
+            df = reduce(lambda left, right: left.join(right), frames[1:], frames[0])
+
+            m90_col = [c for c in df.columns if c.endswith('m90')]
+            df = df.drop(columns=m90_col)
+
+            logger.info('Make aggregate map')
+            rows = []
+            for acol, scols in aggregates.items():
+                df[acol] = df.loc[:, scols].sum(axis=1)
+
+                for c in scols:
+                    rows.append((acol, c, self.column_map[c.upper()]))
+
+            self._agg_map = pd.DataFrame(rows, columns=['agg_column', 'source_col', 'description'])
+
+            cols = get_columns(self.pkg)
+            df = df.reset_index()
+
+            iq = self.pkg.reference('income_quartiles').dataframe()
+            df = df.merge(iq.set_index('geoid'), on='geoid').fillna(0)
+
+            agg = self.pkg.reference('aggregate_income').dataframe().drop(columns=['households'])
+            df = df.merge(agg.set_index('geoid'), on='geoid').fillna(0)
+
+            df = df.rename(columns=self.table_code_map)
+            self._df = df.replace({'':0}).fillna(0)[cols]
+
+        return self._df
+
+
 
     outputs = ('census_set', 'agg_map')
 

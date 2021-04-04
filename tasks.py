@@ -16,6 +16,7 @@ sys.path.append(str(Path(__file__).parent.resolve()))
 
 import pylib
 
+sys.path.pop()
 
 # To configure options for invoke functions you can:
 # - Set values in the 'invoke' section of `~/.metapack.yaml
@@ -44,9 +45,9 @@ def build(c, force=None):
     """Build a filesystem package."""
 
     import logging
-    from pylib import logger
+
     logging.basicConfig()
-    logger.setLevel(logging.INFO)
+    pylib.logger.setLevel(logging.INFO)
 
     pkg_dir = str(Path(__file__).parent.resolve())
     print(f"Pkg dir: {pkg_dir}")

@@ -2,40 +2,40 @@ Declare,metatab-latest
 Title,Demosearch Census Extract
 Description,Extract of select census variables for demographic radius searches
 Identifier,027d9bf3-a280-4ab9-9f0d-f41d93896412
-Name,civicknowledge.com-census-demosearch-1.2.4
+Name,civicknowledge.com-census-demosearch-1.2.5
 Dataset,census
 Origin,civicknowledge.com
 Time,
 Space,
 Grain,
 Variant,demosearch
-Version,1.2.4
+Version,1.2.5
 Version.Major,1
 Version.Minor,2
-Version.Patch,4
+Version.Patch,5
 Created,2021-01-27T21:18:36
-Modified,2021-02-22T03:50:21
+Modified,2021-04-09T23:39:54
 Giturl,https://github.com/metatab-packages/civicknowledge.com-census-demosearch.git
-
+""
 Section,Contacts,Email,Organization,Url
 Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowledge.com
-
+""
 Section,Documentation,Title,Description,
 Documentation,file:README.md,README,,
-
+""
 Section,References,Name,Description,
 Reference,census://2019/5/US/tract/B01001,B01001,Sex by age,
 Reference,census://2019/5/US/tract/B01002,B01002,Median Age by Sex,
 Reference,census://2018/5/US/tract/B11009,B11009,Coupled Households by Type,
 Reference,census://2018/5/US/tract/B26105,B26105,Group Quarters Type (3 Types) by School Enrollment,
 Reference,census://2019/5/US/tract/B15001,B15001,Sex by Age by Educational Attainment,
-Reference,metapack+http://library.metatab.org/civicknowledge.com-income_dist-tract.csv#income_quartiles,income_quartiles,Estimtes of population in each income quartile per tract,
-Reference,metapack+http://library.metatab.org/civicknowledge.com-income_dist-tract.csv#census,aggregate_income,Census variabes related to income,
-
+Reference,index:civicknowledge.com-income_dist-tract#income_quartiles,income_quartiles,Estimtes of population in each income quartile per tract,
+Reference,index:civicknowledge.com-income_dist-tract#census,aggregate_income,Census variabes related to income,
+""
 Section,Resources,Name,Description,,,
 Datafile,file:data/census_set.csv,census_set,Tract datasets combined into a single frame,,,
 Datafile,file:data/agg_map.csv,agg_map,Description of which columns were aggregated together,,,
-
+""
 Section,Schema,DataType,Description,TableCode,Has_Codes
 Table,census_set,,,,
 Table.Column,geoid,string,Tract geoid,,

@@ -16,13 +16,13 @@ Version.Patch,5
 Created,2021-01-27T21:18:36
 Modified,2021-04-09T23:39:54
 Giturl,https://github.com/metatab-packages/civicknowledge.com-census-demosearch.git
-""
+
 Section,Contacts,Email,Organization,Url
 Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowledge.com
-""
+
 Section,Documentation,Title,Description,
 Documentation,file:README.md,README,,
-""
+
 Section,References,Name,Description,
 Reference,census://2019/5/US/tract/B01001,B01001,Sex by age,
 Reference,census://2019/5/US/tract/B01002,B01002,Median Age by Sex,
@@ -31,12 +31,12 @@ Reference,census://2018/5/US/tract/B26105,B26105,Group Quarters Type (3 Types) b
 Reference,census://2019/5/US/tract/B15001,B15001,Sex by Age by Educational Attainment,
 Reference,index:civicknowledge.com-income_dist-tract#income_quartiles,income_quartiles,Estimtes of population in each income quartile per tract,
 Reference,index:civicknowledge.com-income_dist-tract#census,aggregate_income,Census variabes related to income,
-""
+
 Section,Resources,Name,Description,,,
 Datafile,file:data/census_set.csv,census_set,Tract datasets combined into a single frame,,,
 Datafile,file:data/agg_map.csv,agg_map,Description of which columns were aggregated together,,,
-""
-Section,Schema,DataType,Description,TableCode,Has_Codes
+
+Section,Schema,DataType,Description,TableCode,Quotient
 Table,census_set,,,,
 Table.Column,geoid,string,Tract geoid,,
 Table.Column,total_population,integer,Total Population,b01001_001,
@@ -62,15 +62,15 @@ Table.Column,75k_120k,integer,,,
 Table.Column,gt120k,integer,,,
 Table.Column,gt50k,integer,,,
 Table.Column,gt60k,integer,,,
-Table.Column,median_income,integer,,,
+Table.Column,median_income,integer,,,Y
 Table.Column,agg_income,integer,,,
 Table.Column,agg_hh_income,integer,,,
-Table.Column,hhinc_00,integer,,,
-Table.Column,hhinc_20,integer,,,
-Table.Column,hhinc_40,integer,,,
-Table.Column,hhinc_60,integer,,,
-Table.Column,hhinc_80,integer,,,
-Table.Column,hhinc_95,integer,,,
+Table.Column,hhinc_00,integer,,,Y
+Table.Column,hhinc_20,integer,,,Y
+Table.Column,hhinc_40,integer,,,Y
+Table.Column,hhinc_60,integer,,,Y
+Table.Column,hhinc_80,integer,,,Y
+Table.Column,hhinc_95,integer,,,Y
 Table,agg_map,,,,
 Table.Column,agg_column,string,,,
 Table.Column,source_col,string,,,

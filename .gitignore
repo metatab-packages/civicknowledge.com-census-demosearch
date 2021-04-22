@@ -12,3 +12,4 @@ _packages
 .idea
 data/agg_map.csv
 data/census_set.csv
+data/cache

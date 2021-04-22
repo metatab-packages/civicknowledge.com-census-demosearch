@@ -2,40 +2,40 @@ Declare,metatab-latest
 Title,Demosearch Census Extract
 Description,Extract of select census variables for demographic radius searches
 Identifier,027d9bf3-a280-4ab9-9f0d-f41d93896412
-Name,civicknowledge.com-census-demosearch-1.2.5
+Name,civicknowledge.com-census-demosearch-1.3.1
 Dataset,census
 Origin,civicknowledge.com
 Time,
 Space,
 Grain,
 Variant,demosearch
-Version,1.2.5
+Version,1.3.1
 Version.Major,1
-Version.Minor,2
-Version.Patch,5
+Version.Minor,3
+Version.Patch,1
 Created,2021-01-27T21:18:36
-Modified,2021-04-09T23:39:54
+Modified,2021-04-22T19:42:13
 Giturl,https://github.com/metatab-packages/civicknowledge.com-census-demosearch.git
-
+""
 Section,Contacts,Email,Organization,Url
 Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowledge.com
-
+""
 Section,Documentation,Title,Description,
 Documentation,file:README.md,README,,
-
+""
 Section,References,Name,Description,
 Reference,census://2019/5/US/tract/B01001,B01001,Sex by age,
 Reference,census://2019/5/US/tract/B01002,B01002,Median Age by Sex,
 Reference,census://2018/5/US/tract/B11009,B11009,Coupled Households by Type,
-Reference,census://2018/5/US/tract/B26105,B26105,Group Quarters Type (3 Types) by School Enrollment,
-Reference,census://2019/5/US/tract/B15001,B15001,Sex by Age by Educational Attainment,
+Reference,census://2019/5/US/tract/B15003,B15003,Educational Attainment,
+Reference,census://2019/5/US/tract/B25013,B25013,Tenure by Educational Attainment of Householder,
 Reference,index:civicknowledge.com-income_dist-tract#income_quartiles,income_quartiles,Estimtes of population in each income quartile per tract,
 Reference,index:civicknowledge.com-income_dist-tract#census,aggregate_income,Census variabes related to income,
-
+""
 Section,Resources,Name,Description,,,
 Datafile,file:data/census_set.csv,census_set,Tract datasets combined into a single frame,,,
 Datafile,file:data/agg_map.csv,agg_map,Description of which columns were aggregated together,,,
-
+""
 Section,Schema,DataType,Description,TableCode,Quotient
 Table,census_set,,,,
 Table.Column,geoid,string,Tract geoid,,
@@ -45,16 +45,18 @@ Table.Column,female,integer,Female,b01001_026,
 Table.Column,households,integer,"Households, Total",b11009_001,
 Table.Column,households_unmaried,integer,Households - Total - Unmarried - partner households,b11009_002,
 Table.Column,households_cohabiting,integer,"Households, Total, Cohabiting Couple Households",b11009_007,
-Table.Column,population_over_18,integer,"Population 18 Years And Over, Total",b15001_001,
-Table.Column,male_over_18,integer,"Population 18 Years And Over, Total, Male",b15001_002,
-Table.Column,female_over_18,integer,"Population 18 Years And Over, Total, Female",b15001_043,
+Table.Column,housing_occipies,integer,Total  Occupied housing units,b25013_001,
+Table.Column,housing_owned,integer,Owner - occupied housing units,b25013_002,
+Table.Column,housing_owned_college,integer,Owner - occupied housing units  - Bachelor's degree or higher,b25013_006,
+Table.Column,housing_rented,integer,Renter - occupied housing units,b25013_007,
+Table.Column,housing_rented_collete,integer,Renter - occupied housing units  - Bachelor's degree or higher,b25013_011,
 Table.Column,male_u18,integer,"Male, Under 18",,
 Table.Column,female_u18,integer,"Female, Under 18",,
 Table.Column,male_18_40,integer,"Male, 18 to 40 Years Old",,
 Table.Column,female_18_40,integer,"Female, 18 to 40 Years Old",,
 Table.Column,senior,integer,Adults 65 and Older,,
-Table.Column,male_18_44_college,integer,"Male, College educated, 18 to 44 Years Old",,
-Table.Column,female_18_44_college,integer,"Male, College Educated, 18 to 44 Years Old",,
+Table.Column,over25_college,integer,"Over 25 years old, college degree or above",,
+Table.Column,over25_high_school,integer,"Over 25 years old, completed high school to less than colege degree",,
 Table.Column,lt25k,integer,,,
 Table.Column,25k_50k,integer,,,
 Table.Column,50k_75k,integer,,,

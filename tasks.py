@@ -36,12 +36,12 @@ sys.path.pop()
 #    }
 # )
 
-# However, the `groups` and `tags` hould really be set in the `metatada.csv`
+# However, the `groups` and `tags` should really be set in the `metatada.csv`
 # file, and `s3_bucket` and `wp_site` should be set at the collection or global level
 
 
-@task(optional=['force'])
-def build(c, force=None):
+@task(optional=['force','clean'])
+def build(c, force=False, clean=False):
     """Build a filesystem package."""
 
     import logging
@@ -55,8 +55,8 @@ def build(c, force=None):
     pkg = mp.open_package(pkg_dir)
 
     ex = pylib.ExtractManager(pkg)
-    ex.build(force)
+    ex.build(force, clean=clean)
 
-    mp_build(c, force)
+    mp_build(c, force=force)
 
 ns.add_task(build)

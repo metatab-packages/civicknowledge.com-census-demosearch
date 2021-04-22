@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 class LPError(Exception):
     pass
 
-
 aggregates = {
     'male_u18': ['b01001_003', 'b01001_004', 'b01001_005', 'b01001_006'],
     'female_u18': ['b01001_027', 'b01001_028', 'b01001_029', 'b01001_030'],
@@ -27,9 +26,10 @@ aggregates = {
     'senior': ['b01001_020', 'b01001_021', 'b01001_022', 'b01001_023', 'b01001_024', 'b01001_025',
                'b01001_044', 'b01001_045', 'b01001_046', 'b01001_047', 'b01001_048', 'b01001_049'],
 
-    'male_18_44_college': ['b15001_009', 'b15001_010', 'b15001_017', 'b15001_018', 'b15001_025', 'b15001_026'],
-    'female_18_44_college': ['b15001_050', 'b15001_051', 'b15001_058', 'b15001_059', 'b15001_066', 'b15001_067']
-    
+
+    'over25_college': ['b15003_022',  'b15003_023', 'b15003_024', 'b15003_025' ],
+    'over25_high_school': ['b15003_017', 'b15003_018','b15003_019','b15003_020', 'b15003_021' ],
+
 }
 
 
@@ -57,28 +57,15 @@ class ExtractManager(object):
         self.pkg = pkg
         self.pkg_root = Path(self.pkg.path).parent
 
-        self.cache = FileCache(self.pkg_root.joinpath('data', 'cache'))
-
-        self._frames = None
         self._df = None
         self._agg_map = None
-        self._cache = cache
+        
+        if cache is None:
+            self._cache = FileCache(self.pkg_root.joinpath('data', 'cache'))
+        else:
+            self._cache = cache 
 
-    @property
-    def frames(self):
-        if self._frames is None:
-            logger.info('Collect frames')
-            self._frames = [r.dataframe().drop(columns=['stusab', 'county', 'name']) 
-                            for r in tqdm(self.pkg.references())  if r.name.startswith('B')]
-
-        return self._frames
-
-    @property
-    def column_map(self):
-
-        kv = list(filter(col_f, chain(*[list(e for e in e.title_map.items()) for e in self._frames])))
-
-        return {k: munge(v) for k, v in kv}
+   
 
     @property
     def table_code_map(self):
@@ -96,7 +83,6 @@ class ExtractManager(object):
         return self._agg_map
 
 
-
     def update_schema(self):
         pkg = mp.open_package(self.pkg.ref)  # Re-open in case it has changed since loaded in this notebook
 
@@ -107,15 +93,43 @@ class ExtractManager(object):
         pkg.write()
 
     @property
+    def column_map(self):
+        # Gets created in base_census_df
+        return self._cache.get('base_census_df_cm')
+        
+    @property
+    def base_census_df(self):
+        
+        k = 'base_census_df'
+        kcm = 'base_census_df_cm'
+        
+        if not self._cache.exists(k) or not self._cache.exists(kcm):
+            logger.info('Collect frames')
+            frames = [r.dataframe().drop(columns=['stusab', 'county', 'name']) 
+                            for r in tqdm(self.pkg.references())  if r.name.startswith('B')]
+
+            
+            # Need to do this here b/c we need the CensusDataFrame objects
+            kv = list(filter(col_f, chain(*[list(e for e in e.title_map.items()) for e in frames])))
+            column_map = {k: munge(v) for k, v in kv}
+            
+            logger.info('Assemble frames into dataset')
+            df = reduce(lambda left, right: left.join(right), frames[1:], frames[0])
+            self._cache.put_df(k, df)
+            self._cache.put(kcm, column_map)
+            return df
+        else:
+            return self._cache.get(k)
+
+        
+    @property
     def census_set(self):
 
-        if self._df is None or True:
+        if self._df is None:
 
-            frames = self.frames
+            df = self.base_census_df
 
-            logger.info('Assemble frames in to dataset')
-            df = reduce(lambda left, right: left.join(right), frames[1:], frames[0])
-
+            # get rid of the margin columns
             m90_col = [c for c in df.columns if c.endswith('m90')]
             df = df.drop(columns=m90_col)
 
@@ -129,7 +143,7 @@ class ExtractManager(object):
 
             self._agg_map = pd.DataFrame(rows, columns=['agg_column', 'source_col', 'description'])
 
-            cols = get_columns(self.pkg)
+
             df = df.reset_index()
 
             iq = self.pkg.reference('income_quartiles').dataframe()
@@ -138,18 +152,23 @@ class ExtractManager(object):
             agg = self.pkg.reference('aggregate_income').dataframe().drop(columns=['households'])
             df = df.merge(agg.set_index('geoid'), on='geoid').fillna(0)
 
+            # Rename non-agregated columns to nicer names
             df = df.rename(columns=self.table_code_map)
+
+            cols = get_columns(self.pkg)  # Select only the columns described in the schema
             self._df = df.replace({'':0}).fillna(0)[cols]
 
         return self._df
 
 
-
     outputs = ('census_set', 'agg_map')
 
-    def build(self, force=False):
+    def build(self, force=False, clean=False):
 
         dd = self.pkg_root.joinpath('data')
+
+        if clean:
+            self._cache.clean()
 
         if not dd.exists():
             dd.mkdir(parents=True, exist_ok=True)

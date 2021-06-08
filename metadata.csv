@@ -2,78 +2,99 @@ Declare,metatab-latest
 Title,Demosearch Census Extract
 Description,Extract of select census variables for demographic radius searches
 Identifier,027d9bf3-a280-4ab9-9f0d-f41d93896412
-Name,civicknowledge.com-census-demosearch-1.3.1
+Name,civicknowledge.com-census-demosearch-3.1.1
 Dataset,census
 Origin,civicknowledge.com
 Time,
 Space,
 Grain,
 Variant,demosearch
-Version,1.3.1
-Version.Major,1
-Version.Minor,3
+Version,3.1.1
+Version.Major,3
+Version.Minor,1
 Version.Patch,1
 Created,2021-01-27T21:18:36
-Modified,2021-04-22T19:42:13
+Modified,2021-05-27T22:33:29
 Giturl,https://github.com/metatab-packages/civicknowledge.com-census-demosearch.git
-""
+
 Section,Contacts,Email,Organization,Url
 Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowledge.com
-""
+
 Section,Documentation,Title,Description,
 Documentation,file:README.md,README,,
-""
-Section,References,Name,Description,
-Reference,census://2019/5/US/tract/B01001,B01001,Sex by age,
-Reference,census://2019/5/US/tract/B01002,B01002,Median Age by Sex,
-Reference,census://2018/5/US/tract/B11009,B11009,Coupled Households by Type,
-Reference,census://2019/5/US/tract/B15003,B15003,Educational Attainment,
-Reference,census://2019/5/US/tract/B25013,B25013,Tenure by Educational Attainment of Householder,
-Reference,index:civicknowledge.com-income_dist-tract#income_quartiles,income_quartiles,Estimtes of population in each income quartile per tract,
-Reference,index:civicknowledge.com-income_dist-tract#census,aggregate_income,Census variabes related to income,
-""
+
+Section,References,Name,Description,Group
+Reference,censusgeo://2019/5/US/state,us_states,US States geographic boundaries,
+Reference,censusgeo://2019/5/{st}/tract,us_tracts_template,Template URL for US tracts,
+Reference,census://2019/5/US/tract/B01001,B01001,Sex by age,pop
+Reference,census://2019/5/US/tract/B01002,B01002,Median Age by Sex,pop
+Reference,census://2019/5/US/tract/B15003,B15003,Educational Attainment,pop
+Reference,census://2019/5/US/tract/B19313,B19313,Aggregate Income,pop
+Reference,census://2019/5/US/tract/B08303,B08303,Travel Time to Work,pop
+Reference,census://2019/5/US/tract/B23025,B23025,Employment Status,pop
+Reference,census://2019/5/US/tract/B09001,B09001,Population Under 18 Years by Age,pop
+Reference,census://2019/5/US/tract/B17001,B17001,Poverty Status by Sex by Age,pop
+Reference,census://2019/5/US/tract/C24020,C24020,"Sex by Occupation for the Full-time, Year-round Civilian Population",pop,,
+Reference,census://2019/5/US/tract/B25013,B25013,Tenure by Educational Attainment of Householder,households
+Reference,census://2019/5/US/tract/B19025,B19025,Aggregate Household Income,households
+Reference,census://2019/5/US/tract/B11009,B11009,Coupled Households by Type,households
+Reference,census://2019/5/US/tract/B26103,B26103,Group Quarters Type (3 Types),households
+,,,,
+Reference,metapack+http://s3.amazonaws.com/radius.civicknowledge.com/civicknowledge.com-mgrs.csv#utm_bands,utm_bands,UTM bands as polygons,
+Reference,metapack+http://s3.amazonaws.com/radius.civicknowledge.com/civicknowledge.com-mgrs.csv#utm_bands_buffered,utm_bands_buffered,"UTM band polygons, buffered by 10Km",
+
 Section,Resources,Name,Description,,,
-Datafile,file:data/census_set.csv,census_set,Tract datasets combined into a single frame,,,
-Datafile,file:data/agg_map.csv,agg_map,Description of which columns were aggregated together,,,
-""
-Section,Schema,DataType,Description,TableCode,Quotient
-Table,census_set,,,,
+Datafile,notebooks/Tracts.ipynb#tracts,tracts,US Census tracts,,,
+Datafile,notebooks/Population.ipynb#population,population,"US Census population estimates, for tracts",,,
+Datafile,notebooks/Households.ipynb#households,households,"US Census, households, estimates, for tracts",,,
+Section,Schema,DataType,Description,TableCode,Has_Codes
+Table,population,,,,
 Table.Column,geoid,string,Tract geoid,,
+Table.Column,tract_id,integer,Tract ID number,,
 Table.Column,total_population,integer,Total Population,b01001_001,
-Table.Column,male,integer,Male,b01001_002,
-Table.Column,female,integer,Female,b01001_026,
+Table.Column,male,integer,Male,b01001_002,,
+Table.Column,female,integer,Female,b01001_026,,
+Table.Column,population_16gte,integer,Population 16 years and over,B23025_001,
+Table.Column,population_18lt,integer,Population under 18 years - Total ,B09001_001,
+Table.Column,seniors,integer,Population 65 and older,"b01001_020,b01001_021,b01001_022,b01001_023,b01001_024,b01001_025,b01001_044,b01001_045,b01001_046,b01001_047,b01001_048,b01001_049",
+Table.Column,agg_income,integer,Aggregate income,b19313_001,
+Table.Column,poverty,integer,Population for whom poverty status is determined - Total - Income in the past 12 months below poverty level,B17001_002,,
+Table.Column,over25_college,integer,"Over 25 years old, college degree or above","b15003_022, b15003_023, b15003_024, b15003_025",
+Table.Column,over25_high_school,integer,"Over 25 years old, completed high school to less than colege degree","b15003_017, b15003_018, b15003_019, b15003_020, b15003_021",
+Table.Column,workers,integer, Workers 16 years and over who did not work from home - Total,B08303_001,
+Table.Column,commute_25lt,integer, Workers 16 years and over who did not work from home - commute time of less than 25 minutes,"B08303_002,B08303_003,B08303_004,B08303_005,B08303_006",
+Table.Column,commute_25gte,integer, Workers 16 years and over who did not work from home - commute time of 25 minutes or more,"B08303_007,B08303_008,B08303_009,B08303_010,B08303_011, B08303_012,B08303_013",
+Table.Column,labor_force,integer,Population 16 years and over - Total - In labor force ,B23025_002,
+Table.Column,civilian_employed,integer,Population 16 years and over - Total - In labor force - Civilian labor force - Employed,B23025_004,
+Table.Column,civilian_unemployed,integer,Population 16 years and over - Total - In labor force - Civilian labor force - Unemployed,B23025_005,
+Table.Column,armed_forces,integer,Population 16 years and over - Total - In labor force - Armed Forces,B23025_006,
+Table.Column,not_in_labor_force,integer,Population 16 years and over - Total - Not in labor force,B23025_007,
+Table.Column,management_occupations,integer,Management business science and arts occupations,"C24020_003,C24020_039",
+Table.Column,service_occupations,integer,Service occupations,"C24020_019,C24020_055",
+Table.Column,sales_occupations,integer,Sales and office occupations,"C24020_063,C24020_027",
+Table.Column,construction_occupations,integer,Natural resources construction and maintenance occupations,"C24020_030,C24020_066",
+Table.Column,manufacturing_ocupations,integer,Production transportation and material moving occupations,"C24020_070,C24020_034",
+Table,households,,,,
+Table.Column,geoid,string,Tract geoid,,
+Table.Column,tract_id,integer,Tract ID number,,
 Table.Column,households,integer,"Households, Total",b11009_001,
 Table.Column,households_unmaried,integer,Households - Total - Unmarried - partner households,b11009_002,
 Table.Column,households_cohabiting,integer,"Households, Total, Cohabiting Couple Households",b11009_007,
-Table.Column,housing_occipies,integer,Total  Occupied housing units,b25013_001,
+Table.Column,housing_occupied,integer,Total  Occupied housing units,b25013_001,
 Table.Column,housing_owned,integer,Owner - occupied housing units,b25013_002,
 Table.Column,housing_owned_college,integer,Owner - occupied housing units  - Bachelor's degree or higher,b25013_006,
 Table.Column,housing_rented,integer,Renter - occupied housing units,b25013_007,
-Table.Column,housing_rented_collete,integer,Renter - occupied housing units  - Bachelor's degree or higher,b25013_011,
-Table.Column,male_u18,integer,"Male, Under 18",,
-Table.Column,female_u18,integer,"Female, Under 18",,
-Table.Column,male_18_40,integer,"Male, 18 to 40 Years Old",,
-Table.Column,female_18_40,integer,"Female, 18 to 40 Years Old",,
-Table.Column,senior,integer,Adults 65 and Older,,
-Table.Column,over25_college,integer,"Over 25 years old, college degree or above",,
-Table.Column,over25_high_school,integer,"Over 25 years old, completed high school to less than colege degree",,
-Table.Column,lt25k,integer,,,
-Table.Column,25k_50k,integer,,,
-Table.Column,50k_75k,integer,,,
-Table.Column,75k_120k,integer,,,
-Table.Column,gt120k,integer,,,
-Table.Column,gt50k,integer,,,
-Table.Column,gt60k,integer,,,
-Table.Column,median_income,integer,,,Y
-Table.Column,agg_income,integer,,,
-Table.Column,agg_hh_income,integer,,,
-Table.Column,hhinc_00,integer,,,Y
-Table.Column,hhinc_20,integer,,,Y
-Table.Column,hhinc_40,integer,,,Y
-Table.Column,hhinc_60,integer,,,Y
-Table.Column,hhinc_80,integer,,,Y
-Table.Column,hhinc_95,integer,,,Y
-Table,agg_map,,,,
-Table.Column,agg_column,string,,,
-Table.Column,source_col,string,,,
-Table.Column,description,string,,,
+Table.Column,housing_rented_college,integer,Renter - occupied housing units  - Bachelor's degree or higher,b25013_011,
+Table.Column,group_quarters,integer,Total Population - Total - Group quarters population ,B26103_002,
+Table.Column,college_housing,integer,Total Population - Total - Group quarters population - Noninstitutionalized group quarters population - College/university student housing,B26103_007,
+,,,,,
+,,,,,
+Table.Column,agg_hh_income,integer,Aggregate household income,b19025_001,
+Table,tracts,,,,
+Table.Column,geoid,string,,,
+Table.Column,tract_id,integer,,,
+Table.Column,band,integer,,,
+Table.Column,aland,integer,,,
+Table.Column,awater,integer,,,
+Table.Column,continential,integer,,,
+Table.Column,geometry,string,,,

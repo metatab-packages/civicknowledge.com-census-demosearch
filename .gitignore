@@ -13,3 +13,4 @@ _packages
 data/agg_map.csv
 data/census_set.csv
 data/cache
+cache
